@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, ReferenceLine,
@@ -10,18 +10,18 @@ import type { FuzzySetsTask, MFPoint, MembershipFunction } from '../../types'
 const COLORS = ['#00d4ff', '#7c3aed', '#10b981', '#f59e0b', '#ef4444']
 
 const OPERATIONS = [
-  { value: 'not',         label: 'РќР• A (РґРѕРїРѕР»РЅРµРЅРёРµ, Р—Р°РґРµ)' },
-  { value: 'not_sugeno',  label: 'РќР• A (РґРѕРїРѕР»РЅРµРЅРёРµ, РЎСѓРіРµРЅРѕ, О»=1)' },
-  { value: 'and_min',     label: 'A в€© B (T-min, Р—Р°РґРµ)' },
-  { value: 'and_prod',    label: 'A в€© B (T-prod, Р°Р»РіРµР±СЂ.)' },
-  { value: 'and_bounded', label: 'A в€© B (T-bounded, РіСЂР°РЅРёС‡РЅ.)' },
-  { value: 'and_drastic', label: 'A в€© B (T-drastic, СѓСЃРёР»РµРЅРЅ.)' },
-  { value: 'or_max',      label: 'A в€Є B (S-max, Р—Р°РґРµ)' },
-  { value: 'or_sum',      label: 'A в€Є B (S-sum, Р°Р»РіРµР±СЂ.)' },
-  { value: 'or_bounded',  label: 'A в€Є B (S-bounded, РіСЂР°РЅРёС‡РЅ.)' },
-  { value: 'or_drastic',  label: 'A в€Є B (S-drastic, СѓСЃРёР»РµРЅРЅ.)' },
-  { value: 'con',         label: 'CON(A) вЂ” В«РћС‡РµРЅСЊ AВ»' },
-  { value: 'dil',         label: 'DIL(A) вЂ” В«Р”РѕРІРѕР»СЊРЅРѕ AВ»' },
+  { value: 'not',         label: 'НЕ A (дополнение, Заде)' },
+  { value: 'not_sugeno',  label: 'НЕ A (дополнение, Сугено, λ=1)' },
+  { value: 'and_min',     label: 'A ∩ B (T-min, Заде)' },
+  { value: 'and_prod',    label: 'A ∩ B (T-prod, алгебр.)' },
+  { value: 'and_bounded', label: 'A ∩ B (T-bounded, граничн.)' },
+  { value: 'and_drastic', label: 'A ∩ B (T-drastic, усиленн.)' },
+  { value: 'or_max',      label: 'A ∪ B (S-max, Заде)' },
+  { value: 'or_sum',      label: 'A ∪ B (S-sum, алгебр.)' },
+  { value: 'or_bounded',  label: 'A ∪ B (S-bounded, граничн.)' },
+  { value: 'or_drastic',  label: 'A ∪ B (S-drastic, усиленн.)' },
+  { value: 'con',         label: 'CON(A) — «Очень A»' },
+  { value: 'dil',         label: 'DIL(A) — «Довольно A»' },
 ]
 
 export default function FuzzySets() {
@@ -70,7 +70,6 @@ export default function FuzzySets() {
       )
     )
 
-    // Merge into chart data
     const merged: Record<string, number>[] = curves[0].points.map((p, i) => {
       const row: Record<string, number> = { x: Math.round(p.x * 100) / 100 }
       curves.forEach(c => {
@@ -80,7 +79,6 @@ export default function FuzzySets() {
     })
     setChartData(merged)
 
-    // Compute memberships at xPoint
     computeMembershipsAtPoint(task, task.xPoint ?? xMin, curves)
   }
 
@@ -152,13 +150,21 @@ export default function FuzzySets() {
         lineHeight: 1.6,
         marginBottom: 20,
       }}>
-        <strong style={{ color: 'var(--text)' }}>РќРµС‡С‘С‚РєРёРµ РјРЅРѕР¶РµСЃС‚РІР° (Р›.Р—Р°РґРµ, 1965)</strong> вЂ” С„РѕСЂРјР°Р»РёР·Рј РґР»СЏ РѕРїРёСЃР°РЅРёСЏ
-        РїРѕРЅСЏС‚РёР№ СЃ РЅРµС‡С‘С‚РєРѕ Р·Р°РґР°РЅРЅС‹РјРё РіСЂР°РЅРёС†Р°РјРё. РљР°Р¶РґС‹Р№ СЌР»РµРјРµРЅС‚ x РїСЂРёРЅР°РґР»РµР¶РёС‚ РјРЅРѕР¶РµСЃС‚РІСѓ A СЃРѕ СЃС‚РµРїРµРЅСЊСЋ Ој_A(x) в€€ [0,1].
-        Р РµР°Р»РёР·РѕРІР°РЅС‹: С„СѓРЅРєС†РёРё РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚Рё (С‚СЂР°РїРµС†., С‚СЂРµСѓРіРѕР»СЊРЅР°СЏ, РіР°СѓСЃСЃ., Z, S), T/S-РЅРѕСЂРјС‹,
-        Р»РёРЅРіРІ. РјРѕРґРёС„РёРєР°С‚РѕСЂС‹ CON/DIL, max-min/max-prod РєРѕРјРїРѕР·РёС†РёСЏ.
+        <strong style={{ color: 'var(--text)' }}>Нечёткие множества (Л.Заде, 1965)</strong>{' '}
+        —{' '}
+        формализм для описания понятий с нечётко заданными границами.{' '}
+        Каждый элемент x принадлежит множеству A со степенью{' '}
+        μ_A(x) ∈ [0,1].{' '}
+        Реализованы: функции принадлежности (трапец., треугольная, гаусс., Z, S),{' '}
+        T/S-нормы, лингв. модификаторы CON/DIL, max-min/max-prod композиция.
         <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
-          {['Р¤Рџ: С‚СЂРµСѓРіРѕР»СЊРЅ., С‚СЂР°РїРµС†., РіР°СѓСЃСЃ., Z, S', 'T-РЅРѕСЂРјС‹: min, prod, bounded, drastic',
-            'S-РЅРѕСЂРјС‹: max, sum, bounded, drastic', 'CON / DIL', 'max-min / max-prod'].map(s => (
+          {[
+            'ФП: треугольн., трапец., гаусс., Z, S',
+            'T-нормы: min, prod, bounded, drastic',
+            'S-нормы: max, sum, bounded, drastic',
+            'CON / DIL',
+            'max-min / max-prod',
+          ].map(s => (
             <span key={s} style={{
               background: 'var(--surface)',
               border: '1px solid var(--border)',
@@ -173,7 +179,7 @@ export default function FuzzySets() {
       </div>
 
       {/* Task selector */}
-      <Section title="01 / Р’С‹Р±РѕСЂ Р·Р°РґР°С‡Рё РР‘">
+      <Section title="01 / Выбор задачи ИБ">
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {tasks.map(t => (
             <button
@@ -206,7 +212,7 @@ export default function FuzzySets() {
 
       {/* MF Chart */}
       {selectedTask?.sets && chartData.length > 0 && (
-        <Section title="02 / Р¤СѓРЅРєС†РёРё РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚Рё">
+        <Section title="02 / Функции принадлежности">
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -234,14 +240,15 @@ export default function FuzzySets() {
                   animationDuration={400}
                 />
               ))}
-              <ReferenceLine x={xPoint} stroke="var(--warn)" strokeDasharray="4 2" label={{ value: `xв‚Ђ=${xPoint}`, fill: 'var(--warn)', fontSize: 10 }} />
+              <ReferenceLine x={xPoint} stroke="var(--warn)" strokeDasharray="4 2" label={{ value: `x₀=${xPoint}`, fill: 'var(--warn)', fontSize: 10 }} />
             </LineChart>
           </ResponsiveContainer>
 
-          {/* xв‚Ђ slider */}
+          {/* x0 slider */}
           <div style={{ marginTop: 12 }}>
             <label style={{ fontSize: 12, color: 'var(--text2)' }}>
-              РўРѕС‡РєР° РІС‹С‡РёСЃР»РµРЅРёСЏ xв‚Ђ = <strong style={{ color: 'var(--accent)', fontFamily: 'var(--mono)' }}>{xPoint}</strong>
+              Точка вычисления x₀ ={' '}
+              <strong style={{ color: 'var(--accent)', fontFamily: 'var(--mono)' }}>{xPoint}</strong>
             </label>
             <input
               type="range"
@@ -254,10 +261,10 @@ export default function FuzzySets() {
             />
           </div>
 
-          {/* Membership values at xв‚Ђ */}
+          {/* Membership values at x0 */}
           {Object.keys(membership).length > 0 && (
             <div style={{ marginTop: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, color: 'var(--text2)', alignSelf: 'center' }}>Ој(xв‚Ђ={xPoint}):</span>
+              <span style={{ fontSize: 12, color: 'var(--text2)', alignSelf: 'center' }}>μ(x₀={xPoint}):</span>
               {Object.entries(membership).map(([name, mu], i) => (
                 <span key={name} style={{
                   fontFamily: 'var(--mono)',
@@ -268,7 +275,7 @@ export default function FuzzySets() {
                   borderRadius: 4,
                   padding: '2px 8px',
                 }}>
-                  Ој<sub>{name.split(' ')[0]}</sub> = {mu.toFixed(3)}
+                  μ<sub>{name.split(' ')[0]}</sub> = {mu.toFixed(3)}
                 </span>
               ))}
             </div>
@@ -278,17 +285,17 @@ export default function FuzzySets() {
 
       {/* Operations */}
       {selectedTask?.sets && selectedTask.sets.length >= 2 && (
-        <Section title="03 / РћРїРµСЂР°С†РёРё РЅР°Рґ РЅРµС‡С‘С‚РєРёРјРё РјРЅРѕР¶РµСЃС‚РІР°РјРё">
+        <Section title="03 / Операции над нечёткими множествами">
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16, alignItems: 'flex-end' }}>
             <Select
-              label="РћРїРµСЂР°С†РёСЏ"
+              label="Операция"
               value={selectedOp}
               onChange={e => setSelectedOp(e.target.value)}
               options={OPERATIONS}
               style={{ flex: '1', minWidth: 220 }}
             />
             <Select
-              label="РњРЅРѕР¶РµСЃС‚РІРѕ A"
+              label="Множество A"
               value={String(setAIdx)}
               onChange={e => setSetAIdx(Number(e.target.value))}
               options={selectedTask.sets.map((s, i) => ({ value: String(i), label: s.name }))}
@@ -296,14 +303,14 @@ export default function FuzzySets() {
             />
             {!['not', 'not_sugeno', 'con', 'dil'].includes(selectedOp) && (
               <Select
-                label="РњРЅРѕР¶РµСЃС‚РІРѕ B"
+                label="Множество B"
                 value={String(setBIdx)}
                 onChange={e => setSetBIdx(Number(e.target.value))}
                 options={selectedTask.sets.map((s, i) => ({ value: String(i), label: s.name }))}
                 style={{ minWidth: 160 }}
               />
             )}
-            <Btn onClick={handleOperation}>в–¶ Р’С‹РїРѕР»РЅРёС‚СЊ</Btn>
+            <Btn onClick={handleOperation}>▶ Выполнить</Btn>
           </div>
 
           {opResult && (
@@ -313,14 +320,14 @@ export default function FuzzySets() {
               </Alert>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart
-                  data={opResult.map(p => ({ x: Math.round(p.x * 100) / 100, Ој: Math.round(p.mu * 1000) / 1000 }))}
+                  data={opResult.map(p => ({ x: Math.round(p.x * 100) / 100, 'μ': Math.round(p.mu * 1000) / 1000 }))}
                   margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="x" stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
                   <YAxis domain={[0, 1]} stroke="var(--text3)" tick={{ fill: 'var(--text3)', fontSize: 11 }} />
                   <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 12 }} />
-                  <Line type="monotone" dataKey="Ој" stroke="var(--accent3)" strokeWidth={2.5} dot={false} />
+                  <Line type="monotone" dataKey={'μ'} stroke="var(--accent3)" strokeWidth={2.5} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </>
@@ -328,16 +335,18 @@ export default function FuzzySets() {
         </Section>
       )}
 
-      {/* Composition (for compromise task) */}
+      {/* Composition */}
       {selectedTask?.r1 && selectedTask?.r2 && (
-        <Section title="04 / РљРѕРјРїРѕР·РёС†РёСЏ РЅРµС‡С‘С‚РєРёС… РѕС‚РЅРѕС€РµРЅРёР№">
+        <Section title="04 / Композиция нечётких отношений">
           <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16 }}>
-            РЎС‚СЂРѕРёС‚СЃСЏ max-min РёР»Рё max-prod СЃРІС‘СЂС‚РєР° РѕС‚РЅРѕС€РµРЅРёР№ Rв‚Ѓ(X,Y) Рё Rв‚‚(Y,Z):
-            Ој<sub>Rв‚ЃВ·Rв‚‚</sub>(x,z) = max<sub>y</sub>[Ој<sub>Rв‚Ѓ</sub>(x,y) в€§ Ој<sub>Rв‚‚</sub>(y,z)]
+            Строится max-min или max-prod свёртка отношений R₁(X,Y) и R₂(Y,Z):{' '}
+            μ<sub>R₁·R₂</sub>(x,z) = max<sub>y</sub>[μ<sub>R₁</sub>(x,y) ∧ μ<sub>R₂</sub>(y,z)]
           </p>
 
           <div style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 8 }}>Rв‚Ѓ вЂ” РџСЂРёР·РЅР°РєРё в†’ РўРёРї Р°С‚Р°РєРё:</p>
+            <p style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 8 }}>
+              R₁ — Признаки → Тип атаки:
+            </p>
             <MatrixTable
               data={selectedTask.r1}
               rowLabels={selectedTask.r1Labels}
@@ -345,7 +354,9 @@ export default function FuzzySets() {
             />
           </div>
           <div style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 8 }}>Rв‚‚ вЂ” РўРёРї Р°С‚Р°РєРё в†’ РЈС‰РµСЂР±:</p>
+            <p style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 8 }}>
+              R₂ — Тип атаки → Ущерб:
+            </p>
             <MatrixTable
               data={selectedTask.r2}
               rowLabels={selectedTask.r1Cols}
@@ -358,17 +369,17 @@ export default function FuzzySets() {
               value={compMethod}
               onChange={e => setCompMethod(e.target.value)}
               options={[
-                { value: 'max_min', label: 'max-min (в€§)' },
-                { value: 'max_prod', label: 'max-prod (Г—)' },
+                { value: 'max_min', label: 'max-min (∧)' },
+                { value: 'max_prod', label: 'max-prod (×)' },
               ]}
             />
-            <Btn onClick={handleComposition}>в–¶ Р’С‹С‡РёСЃР»РёС‚СЊ Rв‚ЃВ·Rв‚‚</Btn>
+            <Btn onClick={handleComposition}>▶ Вычислить R₁·R₂</Btn>
           </div>
 
           {composition && (
             <>
               <Alert variant="ok">
-                Р РµР·СѓР»СЊС‚Р°С‚ Rв‚ЃВ·Rв‚‚ ({compMethod === 'max_min' ? 'max-min' : 'max-prod'} РєРѕРјРїРѕР·РёС†РёСЏ):
+                Результат R₁·R₂ ({compMethod === 'max_min' ? 'max-min' : 'max-prod'} композиция):
               </Alert>
               <MatrixTable
                 data={composition}
@@ -376,8 +387,11 @@ export default function FuzzySets() {
                 colLabels={selectedTask.r2Cols}
               />
               <p style={{ marginTop: 12, fontSize: 12, color: 'var(--text2)' }}>
-                РЎС‚СЂРѕРєРё = РїСЂРёР·РЅР°РєРё РёРЅС†РёРґРµРЅС‚Р°, СЃС‚РѕР»Р±С†С‹ = СЃС‚РµРїРµРЅСЊ СѓС‰РµСЂР±Р°. РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІ СЃС‚СЂРѕРєРµ
-                СѓРєР°Р·С‹РІР°РµС‚ РЅР° РЅР°РёР±РѕР»РµРµ РІРµСЂРѕСЏС‚РЅС‹Р№ СѓСЂРѕРІРµРЅСЊ СѓС‰РµСЂР±Р° РґР»СЏ РґР°РЅРЅРѕРіРѕ РЅР°Р±РѕСЂР° РїСЂРёР·РЅР°РєРѕРІ.
+                Строки = признаки инцидента,{' '}
+                столбцы = степень ущерба.{' '}
+                Максимальное значение в строке{' '}
+                соответствует наиболее вероятному{' '}
+                уровню ущерба для данного набора признаков.
               </p>
             </>
           )}

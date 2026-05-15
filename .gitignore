@@ -1,0 +1,28 @@
+# Dependencies
+frontend/node_modules/
+backend/vendor/
+
+# Build output
+frontend/dist/
+
+# Temporary build artifacts
+frontend/Dockerfile.prebuilt
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Env files with secrets
+.env
+.env.local
+*.env
+
+# Claude Code
+.claude/
+
+# Misc
+docs/
+extract_pptx.py
+extracted.txt

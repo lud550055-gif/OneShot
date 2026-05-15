@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -76,12 +76,12 @@ export default function DecisionTree() {
         lineHeight: 1.6,
         marginBottom: 20,
       }}>
-        <strong style={{ color: 'var(--text)' }}>РђР»РіРѕСЂРёС‚Рј ID3 (Iterative Dichotomizer 3)</strong> вЂ” СЃС‚СЂРѕРёС‚ РґРµСЂРµРІРѕ СЂРµС€РµРЅРёР№,
-        РІС‹Р±РёСЂР°СЏ РЅР° РєР°Р¶РґРѕРј С€Р°РіРµ РїСЂРёР·РЅР°Рє СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј <em>РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Рј РїСЂРёСЂРѕСЃС‚РѕРј</em>{' '}
-        <code style={{ color: 'var(--accent3)', fontFamily: 'var(--mono)' }}>Gain(S,A) = H(S) в€’ ОЈ(|S_v|/|S| В· H(S_v))</code>, РіРґРµ{' '}
-        <code style={{ color: 'var(--accent3)', fontFamily: 'var(--mono)' }}>H(S) = в€’ОЈ(p_i В· logв‚‚(p_i))</code> вЂ” СЌРЅС‚СЂРѕРїРёСЏ РЁРµРЅРЅРѕРЅР°.
+        <strong style={{ color: 'var(--text)' }}>Алгоритм ID3 (Iterative Dichotomizer 3)</strong> — строит дерево решений,
+        выбирая на каждом шаге признак с максимальным <em>информационным приростом</em>{' '}
+        <code style={{ color: 'var(--accent3)', fontFamily: 'var(--mono)' }}>Gain(S,A) = H(S) − Σ(|S_v|/|S| · H(S_v))</code>, где{' '}
+        <code style={{ color: 'var(--accent3)', fontFamily: 'var(--mono)' }}>H(S) = −Σ(p_i · log₂(p_i))</code> — энтропия Шеннона.
         <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
-          {['Р­РЅС‚СЂРѕРїРёСЏ РЁРµРЅРЅРѕРЅР°', 'Information Gain', 'РРЅРґРµРєСЃ Р”Р¶РёРЅРё', 'ID3 СЂРµРєСѓСЂСЃРёСЏ', 'РР·РІР»РµС‡РµРЅРёРµ РїСЂР°РІРёР»'].map(s => (
+          {['Энтропия Шеннона', 'Information Gain', 'Индекс Джини', 'ID3 рекурсия', 'Извлечение правил'].map(s => (
             <span key={s} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text3)', fontFamily: 'var(--mono)' }}>
               {s}
             </span>
@@ -90,7 +90,7 @@ export default function DecisionTree() {
       </div>
 
       {/* Task selector */}
-      <Section title="01 / Р’С‹Р±РѕСЂ Р·Р°РґР°С‡Рё РР‘">
+      <Section title="01 / Выбор задачи ИБ">
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {tasks.map(t => (
             <button
@@ -123,14 +123,14 @@ export default function DecisionTree() {
       {selectedTask && (
         <>
           {/* Training data */}
-          <Section title="02 / РћР±СѓС‡Р°СЋС‰Р°СЏ РІС‹Р±РѕСЂРєР°">
+          <Section title="02 / Обучающая выборка">
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead>
                   <tr>
                     <th style={thStyle}>#</th>
                     {selectedTask.features.map(f => <th key={f} style={thStyle}>{f}</th>)}
-                    <th style={thStyle}>РљР›РђРЎРЎ</th>
+                    <th style={thStyle}>КЛАСС</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -162,16 +162,16 @@ export default function DecisionTree() {
                 disabled={building}
                 style={{ background: building ? 'var(--border)' : 'var(--accent3)', color: '#000' }}
               >
-                {building ? 'вЏі РџРѕСЃС‚СЂРѕРµРЅРёРµ...' : 'в–¶ РџРѕСЃС‚СЂРѕРёС‚СЊ РґРµСЂРµРІРѕ ID3'}
+                {building ? '⏳ Построение...' : '▶ Построить дерево ID3'}
               </Btn>
             </div>
           </Section>
 
           {steps.length > 0 && (
-            <Section title="03 / Р’С‹С‡РёСЃР»РµРЅРёРµ СЌРЅС‚СЂРѕРїРёРё Рё РїСЂРёСЂРѕСЃС‚Р° РёРЅС„РѕСЂРјР°С†РёРё">
+            <Section title="03 / Вычисление энтропии и прироста информации">
               <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16 }}>
-                РќР° РєР°Р¶РґРѕРј СѓР·Р»Рµ РІС‹С‡РёСЃР»РµРЅР° СЌРЅС‚СЂРѕРїРёСЏ H(S) Рё РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Р№ РїСЂРёСЂРѕСЃС‚ Gain(S,A) РґР»СЏ РІСЃРµС… РїСЂРёР·РЅР°РєРѕРІ.
-                Р’С‹Р±РёСЂР°РµС‚СЃСЏ РїСЂРёР·РЅР°Рє СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј РїСЂРёСЂРѕСЃС‚РѕРј (РІС‹РґРµР»РµРЅ Р·РµР»С‘РЅС‹Рј).
+                На каждом узле вычислена энтропия H(S) и информационный прирост Gain(S,A) для всех признаков.{' '}
+                Выбирается признак с максимальным приростом (выделен зелёным).
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {steps.map((step, i) => (
@@ -186,8 +186,8 @@ export default function DecisionTree() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                       <span style={{ fontSize: 13, fontWeight: 600 }}>{step.node}</span>
                       <div style={{ display: 'flex', gap: 8 }}>
-                        <MonoBadge>H = {step.entropy.toFixed(4)} Р±РёС‚</MonoBadge>
-                        <MonoBadge color="var(--accent3)">в†’ {step.selected}</MonoBadge>
+                        <MonoBadge>H = {step.entropy.toFixed(4)} бит</MonoBadge>
+                        <MonoBadge color="var(--accent3)">→ {step.selected}</MonoBadge>
                       </div>
                     </div>
 
@@ -221,11 +221,11 @@ export default function DecisionTree() {
 
           {tree && (
             <>
-              <Section title="04 / Р”РµСЂРµРІРѕ СЂРµС€РµРЅРёР№ (РІРёР·СѓР°Р»РёР·Р°С†РёСЏ)">
+              <Section title="04 / Дерево решений (визуализация)">
                 <TreeViz tree={tree} classLabels={selectedTask.classLabels} />
               </Section>
 
-              <Section title="05 / РР·РІР»РµС‡С‘РЅРЅС‹Рµ РїСЂР°РІРёР»Р° IF-THEN">
+              <Section title="05 / Извлечённые правила IF-THEN">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {rules.map((rule, i) => (
                     <div key={i} style={{
@@ -244,9 +244,9 @@ export default function DecisionTree() {
                 </div>
               </Section>
 
-              <Section title="06 / РљР»Р°СЃСЃРёС„РёРєР°С†РёСЏ РЅРѕРІРѕРіРѕ РѕР±СЉРµРєС‚Р°">
+              <Section title="06 / Классификация нового объекта">
                 <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16 }}>
-                  Р’РІРµРґРёС‚Рµ Р·РЅР°С‡РµРЅРёСЏ РїСЂРёР·РЅР°РєРѕРІ РЅРѕРІРѕРіРѕ РѕР±СЉРµРєС‚Р° Рё РЅР°Р¶РјРёС‚Рµ В«РљР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°С‚СЊВ».
+                  Введите значения признаков нового объекта и нажмите «Классифицировать».
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12, marginBottom: 16 }}>
                   {selectedTask.features.map(f => {
@@ -273,15 +273,15 @@ export default function DecisionTree() {
                     )
                   })}
                 </div>
-                <Btn onClick={handleClassify} variant="secondary">в–¶ РљР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°С‚СЊ</Btn>
+                <Btn onClick={handleClassify} variant="secondary">▶ Классифицировать</Btn>
 
                 {classResult && (
                   <div style={{ marginTop: 16 }}>
                     <Alert variant={classResult.class.includes('P1') || classResult.class === 'malware' || classResult.class === 'phishing' || classResult.class === 'ddos' ? 'err' : classResult.class === 'normal' || classResult.class === 'benign' || classResult.class === 'legit' ? 'ok' : 'warn'}>
                       <div>
-                        <strong>Р РµР·СѓР»СЊС‚Р°С‚ РєР»Р°СЃСЃРёС„РёРєР°С†РёРё: {selectedTask.classLabels?.[classResult.class] ?? classResult.class}</strong>
+                        <strong>Результат классификации: {selectedTask.classLabels?.[classResult.class] ?? classResult.class}</strong>
                         <div style={{ marginTop: 6, fontSize: 12, color: 'inherit', opacity: 0.8 }}>
-                          РџСѓС‚СЊ: {classResult.path.join(' в†’ ')}
+                          Путь: {classResult.path.join(' → ')}
                         </div>
                       </div>
                     </Alert>
