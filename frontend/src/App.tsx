@@ -122,7 +122,6 @@ export default function App() {
                 onClick={() => setActiveTab(tab.id)}
               >
                 {tab.label}
-                <span style={styles.tabBadge(activeTab === tab.id)}>{tab.badge}</span>
               </button>
             ))}
           </div>

@@ -59,21 +59,38 @@
 
 ## Архитектура
 
+Система построена по классической четырёхуровневой модели **DWH → OLAP → Data Mining → EIS**.
+
+```mermaid
+graph TD
+    User(["👤 Пользователь<br/>ЛПР / Аналитик ИБ"])
+
+    subgraph DC["🐳 Docker Compose"]
+        direction TB
+        EIS["🖥️ EIS — React + Nginx :80<br/><small>React 18 · TypeScript · Vite · Recharts</small>"]
+        OLAP["⚙️ OLAP — Go + Gin :8080<br/><small>REST API · Мамдани · Ларсен · Сугено · ID3</small>"]
+        DM["🔬 Data Mining<br/><small>Fuzzy Logic · Деревья решений · Entropy</small>"]
+        DWH["🗄️ DWH — PostgreSQL 16<br/><small>JSONB · postgres_data volume</small>"]
+    end
+
+    User -->|"HTTP запрос"| EIS
+    EIS -.->|"визуализация МФ / дерева"| User
+    EIS -->|"/api/* proxy"| OLAP
+    OLAP -.->|"JSON ответ + шаги"| EIS
+    OLAP -->|"вызов алгоритмов"| DM
+    DM -.->|"InferenceResponse"| OLAP
+    OLAP -->|"INSERT calculation_history"| DWH
 ```
-Браузер
-   │
-   ▼
-Nginx (порт 80) ─── /api/* ──► Go/Gin Backend (порт 8080) ─── PostgreSQL (порт 5432)
-   │                                    │
-   └──── / ──────► React Frontend (порт 3000)
-```
+
+> **→** запрос / вызов &nbsp;&nbsp; **⇢** ответ / результат (пунктир)
 
 | Слой | Технологии | Роль |
 |---|---|---|
-| EIS | React 18, TypeScript, Vite, Recharts | Интерфейс пользователя |
-| OLAP | Go 1.22, Gin | REST API, алгоритмы |
-| DWH | PostgreSQL 16 | История вычислений |
-| Инфраструктура | Docker Compose, Nginx | Оркестрация и проксирование |
+| EIS | React 18, TypeScript, Vite, Recharts, Nginx | Интерфейс конечного пользователя |
+| OLAP | Go 1.22, Gin, REST API | Аналитический движок, бизнес-логика |
+| Data Mining | Fuzzy Logic (Mamdani/Larsen/Sugeno), ID3 | Алгоритмы интеллектуального анализа |
+| DWH | PostgreSQL 16, JSONB | Хранилище истории вычислений |
+| Инфраструктура | Docker Compose, Nginx | Оркестрация и reverse proxy |
 
 ---
 

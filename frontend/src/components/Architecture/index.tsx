@@ -134,6 +134,113 @@ const MODULES = [
   { id: 'м4', name: 'Архитектура СППР', ref: 'Лекция 2', color: '#f59e0b', desc: 'DWH + OLAP + DM + EIS — логическая архитектура системы' },
 ]
 
+function ArchitectureDiagram() {
+  return (
+    <div style={{
+      background: 'var(--surface2)',
+      border: '1px solid var(--border)',
+      borderRadius: 12,
+      padding: '20px 16px 16px',
+      marginTop: 24,
+    }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)', fontFamily: 'var(--mono)', marginBottom: 14, letterSpacing: 1.5, textTransform: 'uppercase' as const }}>
+        Схема архитектуры
+      </div>
+      <svg viewBox="0 0 760 490" style={{ width: '100%', maxWidth: 760, display: 'block', margin: '0 auto' }}>
+        <defs>
+          <marker id="arch-arr-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#00d4ffaa" />
+          </marker>
+          <marker id="arch-arr-blue-d" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#00d4ff44" />
+          </marker>
+          <marker id="arch-arr-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aedaa" />
+          </marker>
+          <marker id="arch-arr-purple-d" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed44" />
+          </marker>
+          <marker id="arch-arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#10b981aa" />
+          </marker>
+          <marker id="arch-arr-green-d" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#10b98144" />
+          </marker>
+          <marker id="arch-arr-yellow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0baa" />
+          </marker>
+        </defs>
+
+        {/* Docker Compose wrapper */}
+        <rect x="55" y="106" width="650" height="352" rx="14" fill="none" stroke="#ef444430" strokeWidth="1.5" strokeDasharray="10,5" />
+        <text x="74" y="126" fill="#ef444466" fontSize="11" fontFamily="monospace">Docker Compose</text>
+
+        {/* ── User box ── */}
+        <rect x="300" y="16" width="160" height="48" rx="8" fill="#0d0d18" stroke="#00d4ff" strokeWidth="1.5" />
+        <text x="380" y="36" textAnchor="middle" fill="#00d4ff" fontSize="12" fontFamily="monospace" fontWeight="600">Пользователь</text>
+        <text x="380" y="54" textAnchor="middle" fill="#666" fontSize="10" fontFamily="monospace">ЛПР / Аналитик ИБ</text>
+
+        {/* ── EIS box ── */}
+        <rect x="220" y="118" width="320" height="62" rx="8" fill="#00d4ff0d" stroke="#00d4ff" strokeWidth="1.5" />
+        <text x="380" y="140" textAnchor="middle" fill="#00d4ff" fontSize="13" fontFamily="monospace" fontWeight="700">EIS / React + Nginx</text>
+        <text x="380" y="157" textAnchor="middle" fill="#999" fontSize="10" fontFamily="monospace">React 18 · TypeScript · Nginx :80</text>
+        <text x="380" y="172" textAnchor="middle" fill="#555" fontSize="9" fontFamily="monospace">Интерфейс конечного пользователя</text>
+
+        {/* ── OLAP box ── */}
+        <rect x="220" y="240" width="320" height="62" rx="8" fill="#7c3aed0d" stroke="#7c3aed" strokeWidth="1.5" />
+        <text x="380" y="262" textAnchor="middle" fill="#7c3aed" fontSize="13" fontFamily="monospace" fontWeight="700">OLAP / Go + Gin</text>
+        <text x="380" y="279" textAnchor="middle" fill="#999" fontSize="10" fontFamily="monospace">Go 1.22 · Gin · REST API :8080</text>
+        <text x="380" y="294" textAnchor="middle" fill="#555" fontSize="9" fontFamily="monospace">Аналитический движок</text>
+
+        {/* ── Data Mining box ── */}
+        <rect x="78" y="370" width="222" height="62" rx="8" fill="#10b9810d" stroke="#10b981" strokeWidth="1.5" />
+        <text x="189" y="391" textAnchor="middle" fill="#10b981" fontSize="12" fontFamily="monospace" fontWeight="700">Data Mining</text>
+        <text x="189" y="408" textAnchor="middle" fill="#999" fontSize="10" fontFamily="monospace">Fuzzy Logic · ID3 · Entropy</text>
+        <text x="189" y="423" textAnchor="middle" fill="#555" fontSize="9" fontFamily="monospace">Нечёткий вывод + Деревья решений</text>
+
+        {/* ── DWH box ── */}
+        <rect x="460" y="370" width="222" height="62" rx="8" fill="#f59e0b0d" stroke="#f59e0b" strokeWidth="1.5" />
+        <text x="571" y="391" textAnchor="middle" fill="#f59e0b" fontSize="12" fontFamily="monospace" fontWeight="700">DWH / PostgreSQL</text>
+        <text x="571" y="408" textAnchor="middle" fill="#999" fontSize="10" fontFamily="monospace">PostgreSQL 16 · JSONB · Volume</text>
+        <text x="571" y="423" textAnchor="middle" fill="#555" fontSize="9" fontFamily="monospace">Хранилище вычислений</text>
+
+        {/* ══ ARROWS ══ */}
+
+        {/* User → EIS (HTTP, solid) */}
+        <line x1="373" y1="64" x2="373" y2="115" stroke="#00d4ffaa" strokeWidth="1.5" markerEnd="url(#arch-arr-blue)" />
+        {/* EIS → User (response, dashed) */}
+        <line x1="387" y1="118" x2="387" y2="67" stroke="#00d4ff44" strokeWidth="1" strokeDasharray="5,4" markerEnd="url(#arch-arr-blue-d)" />
+        <text x="400" y="93" fill="#00d4ffaa" fontSize="10" fontFamily="monospace">HTTP запрос</text>
+        <text x="256" y="87" fill="#00d4ff44" fontSize="9" fontFamily="monospace" fontStyle="italic">← визуализация</text>
+
+        {/* EIS → OLAP (/api/*, solid) */}
+        <line x1="373" y1="180" x2="373" y2="237" stroke="#7c3aedaa" strokeWidth="1.5" markerEnd="url(#arch-arr-purple)" />
+        {/* OLAP → EIS (JSON response, dashed) */}
+        <line x1="387" y1="240" x2="387" y2="183" stroke="#7c3aed44" strokeWidth="1" strokeDasharray="5,4" markerEnd="url(#arch-arr-purple-d)" />
+        <text x="400" y="212" fill="#7c3aedaa" fontSize="10" fontFamily="monospace">/api/v1 proxy</text>
+        <text x="248" y="206" fill="#7c3aed44" fontSize="9" fontFamily="monospace" fontStyle="italic">← JSON ответ</text>
+
+        {/* OLAP → DM (call, solid) */}
+        <line x1="305" y1="302" x2="238" y2="367" stroke="#10b981aa" strokeWidth="1.5" markerEnd="url(#arch-arr-green)" />
+        {/* DM → OLAP (result, dashed) */}
+        <line x1="250" y1="370" x2="317" y2="305" stroke="#10b98144" strokeWidth="1" strokeDasharray="5,4" markerEnd="url(#arch-arr-green-d)" />
+        <text x="196" y="335" fill="#10b981aa" fontSize="10" fontFamily="monospace">вызов алг. →</text>
+        <text x="256" y="355" fill="#10b98144" fontSize="9" fontFamily="monospace" fontStyle="italic">← результат</text>
+
+        {/* OLAP → DWH (INSERT, solid) */}
+        <line x1="455" y1="302" x2="528" y2="367" stroke="#f59e0baa" strokeWidth="1.5" markerEnd="url(#arch-arr-yellow)" />
+        <text x="454" y="338" fill="#f59e0baa" fontSize="10" fontFamily="monospace">INSERT →</text>
+
+        {/* ── Legend ── */}
+        <line x1="80" y1="462" x2="118" y2="462" stroke="#aaa" strokeWidth="1.5" markerEnd="url(#arch-arr-blue)" />
+        <text x="126" y="466" fill="#888" fontSize="10" fontFamily="monospace">запрос / вызов</text>
+        <line x1="260" y1="462" x2="298" y2="462" stroke="#aaa" strokeWidth="1" strokeDasharray="5,4" markerEnd="url(#arch-arr-blue-d)" />
+        <text x="306" y="466" fill="#888" fontSize="10" fontFamily="monospace">ответ / результат</text>
+      </svg>
+    </div>
+  )
+}
+
 export default function Architecture() {
   const [activeLayer, setActiveLayer] = useState<string | null>(null)
 
@@ -222,6 +329,8 @@ export default function Architecture() {
             </div>
           ))}
         </div>
+
+        <ArchitectureDiagram />
       </Section>
 
       {/* Data flow */}
